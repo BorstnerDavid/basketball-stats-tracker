@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    // Roles live in the users collection (no Cloud Functions on the free plan,
+    // so no custom claims). Each check costs one read - acceptable at hobby scale.
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return signedIn() && userDoc().role == 'admin';
+    }
+    function isReferee() {
+      return signedIn() && userDoc().role == 'referee';
+    }
+
+    // Public, read-only reference data. Admins manage it.
+    match /leagues/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /teams/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /players/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /news/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Season aggregates: written by the finalize step (admin or referee client).
+    match /seasonStats/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isReferee();
+    }
+
+    match /matches/{matchId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // A referee may only update games assigned to them.
+      allow update: if isAdmin()
+                 || (isReferee() && resource.data.refereeUid == request.auth.uid);
+
+      match /events/{eventId} {
+        allow read: if true;
+        allow create, delete: if isAdmin()
+                           || (isReferee()
+                               && get(/databases/$(database)/documents/matches/$(matchId)).data.refereeUid == request.auth.uid);
+        allow update: if false;
+      }
+    }
+
+    // Bootstrap the FIRST admin by creating users/{yourUid} manually in the
+    // Firebase console (the console bypasses these rules). After that, admins
+    // create referee accounts from the app.
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

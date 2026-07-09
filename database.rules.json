@@ -1,0 +1,18 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "live": {
+      ".read": true,
+      "$matchId": {
+        ".write": "auth != null && root.child('roles').child(auth.uid).exists()"
+      }
+    },
+    "roles": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && root.child('roles').child(auth.uid).val() === 'admin'"
+      }
+    }
+  }
+}

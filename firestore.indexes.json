@@ -1,0 +1,53 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "leagueId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "matches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "refereeUid", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "players",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "teamId", "order": "ASCENDING" },
+        { "fieldPath": "number", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "seasonStats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "leagueId", "order": "ASCENDING" },
+        { "fieldPath": "pts", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
